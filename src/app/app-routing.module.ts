@@ -7,7 +7,7 @@ import { ResultComponent } from "./result/result.component"
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'results', component: ResultComponent },
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent } 
 ];
 
