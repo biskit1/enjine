@@ -1,0 +1,45 @@
+<div class="row">
+  <div class="col">
+    <input #fileInput class="inputfile" type="file" accept=".csv" multiple (change)="processFile(fileInput)"
+      id="fileupload" />
+    <label for="fileupload" class="btn btn-secondary">Select a file...</label>
+  </div>
+</div>
+<h3>{{ selectedFiles.length }} Queued Files</h3>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Size</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of selectedFiles;let i=index">
+      <td>
+        <strong>File {{+i+1}}: <blockquote>{{ item.name }}</blockquote></strong>
+      </td>
+      <td nowrap>
+        {{ item.size/1024/1024 | number:'.2' }} MB
+      </td>
+      <td nowrap>
+        <button type="button" class="btn btn-danger btn-xs" (click)="selectedFiles.splice(i,1)">
+          <span class="fa fa-trash"></span>
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<div class="mt-5">
+  <p>
+    <strong>Choose exactly two files to upload</strong>
+  </p>
+  <button type="button" class="btn btn-success btn-s" (click)="uploadFiles(selectedFiles)"
+    [disabled]="selectedFiles.length != 2">
+    <span class="fa fa-upload"></span> Upload all
+  </button>
+  <button type="button" class="btn btn-danger btn-s" (click)="selectedFiles.length=0"
+    [disabled]="!selectedFiles.length">
+    <span class="fa fa-trash"></span> Remove all
+  </button>
+</div>
