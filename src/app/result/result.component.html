@@ -35,12 +35,12 @@
                   <td>{{item.name}}</td>
                   <td>{{item.percent}}%</td>
                   <td>N/A</td>
-                  <td>{{item.difPercent}}%</td>
+                  <td>{{item.percent}}%</td>
                 </tr>
               </ng-template>
             </ng-container>
             <ng-container *ngFor="let item of smaller">
-              <tr *ngIf="!item.intersection">
+              <tr *ngIf="item.intersection == false">
                 <td>{{item.name}}</td>
                 <td>N/A</td>
                 <td>{{item.percent}}%</td>
