@@ -48,8 +48,4 @@ export class ResultComponent implements OnInit {
     this.fileName1 = this.fileInfo1.etfName;
     this.fileName2 = this.fileInfo2.etfName;
   }
-
-  goBack(){
-    this.router.navigate(["/home"]);
-  }
 }
