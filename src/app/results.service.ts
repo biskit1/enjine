@@ -118,6 +118,7 @@ export class ResultsService {
         this.smaller[elem].intersection = true;
 
         this.bigger[i].smallerElem = elem;
+        this.smaller[elem].smallerElem = elem;
         this.bigger[i].difPercent = parseFloat(Number(dif).toFixed(6));
         this.smaller[elem].difPercent = parseFloat(Number(dif).toFixed(6));
       }

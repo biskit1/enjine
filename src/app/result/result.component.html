@@ -22,7 +22,7 @@
           </thead>
           <tbody>
             <ng-container *ngFor="let item of bigger">
-              <ng-container *ngIf="item.intersection; else elseBlock">
+              <ng-container *ngIf="item.smallerElem != -1; else elseBlock">
                 <tr>
                   <td>{{item.name}}</td>
                   <td>{{item.percent}}%</td>
@@ -40,7 +40,7 @@
               </ng-template>
             </ng-container>
             <ng-container *ngFor="let item of smaller">
-              <tr *ngIf="item.intersection == false">
+              <tr *ngIf="item.smallerElem == -1">
                 <td>{{item.name}}</td>
                 <td>N/A</td>
                 <td>{{item.percent}}%</td>
