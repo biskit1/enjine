@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Result, FileInfo } from '../result';
 import { ResultsService } from '../results.service'
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -22,7 +23,7 @@ export class ResultComponent implements OnInit {
   fileInfo1: FileInfo;
   fileInfo2:FileInfo;
 
-  constructor(private service: ResultsService) {
+  constructor(private service: ResultsService, private router: Router) {
   
   }
 
@@ -46,5 +47,9 @@ export class ResultComponent implements OnInit {
     this.fileInfo2 = this.fileInfo[1]
     this.fileName1 = this.fileInfo1.etfName;
     this.fileName2 = this.fileInfo2.etfName;
+  }
+
+  goBack(){
+    this.router.navigate(["/home"]);
   }
 }

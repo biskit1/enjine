@@ -17,7 +17,15 @@
   <tbody>
     <tr *ngFor="let item of selectedFiles;let i=index">
       <td>
-        <strong>File {{+i+1}}: <blockquote>{{ item.name }}</blockquote></strong>
+        <dl class="dl-horizontal">
+          <dt>
+              File {{+i+1}}:
+          </dt>
+          <dd>
+              {{ item.name }}
+          </dd>
+        </dl>
+        <!-- <strong> <blockquote>{{ item.name }}</blockquote></strong> -->
       </td>
       <td nowrap>
         {{ item.size/1024/1024 | number:'.2' }} MB
@@ -34,11 +42,11 @@
   <p>
     <strong>Choose exactly two files to upload</strong>
   </p>
-  <button type="button" class="btn btn-success btn-s" (click)="uploadFiles(selectedFiles)"
+  <button type="button" class="btn btn-success btn-s m-1" (click)="uploadFiles(selectedFiles)"
     [disabled]="selectedFiles.length != 2">
     <span class="fa fa-upload"></span> Upload all
   </button>
-  <button type="button" class="btn btn-danger btn-s" (click)="selectedFiles.length=0"
+  <button type="button" class="btn btn-danger btn-s m-1" (click)="selectedFiles.length=0"
     [disabled]="!selectedFiles.length">
     <span class="fa fa-trash"></span> Remove all
   </button>

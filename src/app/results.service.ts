@@ -26,7 +26,7 @@ export class ResultsService {
   constructor(private router: Router) { }
   
   // load and parse file information
-  uploadFiles(files: File[]): void {
+  public uploadFiles(files: File[]): void {
     // keep track of file1 vs file2
     var obj1 = { etfName: '', bigger: false, file: <any>[], date: '', size: 0 };
     var obj2 = { etfName: '', bigger: false, file: <any>[], date: '', size: 0 };
@@ -73,15 +73,15 @@ export class ResultsService {
   }
 
   // assumes particular csv parsing. iterate through lines of the file and store columns in respective fileData location
-  parseLines(lines, fileData): void {
-    var obj = { name: '', percent: null, intersection: false, smallerElem: -1, difPercent: 0 };
+  private parseLines(lines, fileData): void {
+    var obj = { name: '', percent: null, intersection: false, smallerElem: -1, difPercent: 0.00 };
 
     for (var i = 6; i < lines.length; i++) {
       if (lines[i] !== "") {
         var currentline = lines[i].split(",");
 
         obj.name = currentline[0];
-        obj.percent = parseFloat(currentline[1].slice(4)).toPrecision(5);
+        obj.percent = parseFloat(currentline[1].slice(4)).toFixed(6);
 
         fileData.push(Object.assign({}, obj));
       }
@@ -92,7 +92,7 @@ export class ResultsService {
   }
 
   // get % market value differences for intersecting holdings
-  getDifferences(files) {
+  private getDifferences(files) {
     // identify smaller file for more efficient looping and for use when rendering final chart
     if (files[0].length <= files[1].length){
       this.smaller = files[0];
@@ -112,14 +112,14 @@ export class ResultsService {
       var elem = this.smaller.findIndex(item => item.name === this.bigger[i].name);
 
       if (elem != -1) {
-        var dif = Math.abs(this.smaller[elem].percent - this.bigger[i].percent).toPrecision(5);
+        var dif = Math.abs(this.smaller[elem].percent - this.bigger[i].percent).toPrecision(6);
 
         this.bigger[i].intersection = true;
         this.smaller[elem].intersection = true;
 
         this.bigger[i].smallerElem = elem;
-        this.bigger[i].difPercent = parseFloat(dif);
-        this.smaller[elem].difPercent = parseFloat(dif);
+        this.bigger[i].difPercent = parseFloat(Number(dif).toFixed(6));
+        this.smaller[elem].difPercent = parseFloat(Number(dif).toFixed(6));
       }
       else {
         this.bigger[i].difPercent = this.bigger[i].percent;
@@ -128,7 +128,7 @@ export class ResultsService {
   }
 
   // return array with each files information
-  getReuslts():FileInfo[]{
+  public getReuslts():FileInfo[]{
     return this.fileInfo;
   }
 
