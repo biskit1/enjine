@@ -8,8 +8,8 @@ export class Result {
 
 export class FileInfo {
     etfName: string;
-    bigger: boolean;
-    file: [];
+    bigger: boolean;        //?
+    file: [];               //?
     date: string;
-    size: number;
+    size: number;           //?
 }

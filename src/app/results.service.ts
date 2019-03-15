@@ -8,8 +8,8 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class ResultsService {
-  // storage for each files rows
-  private data1: Result[] = [];
+  // storage for each files rows//needed??
+  private data1: Result[] = [];   
   private data2: Result[] = [];
 
   // array containing data1 and data2. used to obtain differences between the two files holdings 
@@ -54,7 +54,7 @@ export class ResultsService {
       obj1.date = linesF1[3];
       obj2.date = linesF2[3];
 
-      // save file content (as text)
+      // save file content (as text) // needed?
       obj1.file = fileContents[0];
       obj2.file = fileContents[1];
 

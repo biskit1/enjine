@@ -15,8 +15,8 @@ export class ResultComponent implements OnInit {
   bigger: Result[] = [];
 
   // filenames
-  fileName1:string;
-  fileName2:string;
+  // fileName1:string;
+  // fileName2:string;
 
   // file information
   fileInfo: FileInfo[];
@@ -45,7 +45,7 @@ export class ResultComponent implements OnInit {
     // extract individual file information to store seperately for rendering 
     this.fileInfo1= this.fileInfo[0];
     this.fileInfo2 = this.fileInfo[1]
-    this.fileName1 = this.fileInfo1.etfName;
-    this.fileName2 = this.fileInfo2.etfName;
+    // this.fileName1 = this.fileInfo1.etfName;
+    // this.fileName2 = this.fileInfo2.etfName;
   }
 }
