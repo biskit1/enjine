@@ -2,8 +2,8 @@
   <div class="row">
     <div class="col-md-12 mb-5">
       <h1 class="text-center mt-5">Results</h1>
-      <h4 class="mt-3">Difference in % Market Value for ETFs <strong>{{fileName1}}</strong> and
-        <strong>{{fileName2}}</strong></h4>
+      <h4 class="mt-3">Difference in % Market Value for ETFs <strong>{{fileInfo1.etfName}}</strong> and
+        <strong>{{fileInfo2.etfName}}</strong></h4>
       <div class="table-responsive mt-5 mb-3">
         <table class="table table-striped">
           <thead>
@@ -50,7 +50,9 @@
           </tbody>
         </table>
       </div>
+        
       <a href="." class="btn btn-primary">Upload more</a>
     </div>
   </div>
+  <app-chart></app-chart>
 </div>
