@@ -2,23 +2,19 @@
   <div class="row">
     <div class="col-md-12 mb-5">
       <h1 class="text-center mt-5">Results</h1>
-      <h4 class="mt-3">Difference in % Market Value for ETFs <strong>{{fileName1}}</strong> and
-        <strong>{{fileName2}}</strong></h4>
+      <h4 class="mt-3">Difference in % Market Value for ETFs <strong>{{service.getNameBigger()}}</strong> and
+        <strong>{{service.getNameSmaller()}}</strong></h4>
+      <p>{{service.getFileDate()}}</p>
+      <app-chart></app-chart>
       <div class="table-responsive mt-5 mb-3">
         <table class="table table-striped">
           <thead>
-            <tr *ngIf="fileInfo1.bigger == true; else elseOther">
+            <tr>
               <th class="table-heading">Holdings</th>
-              <th class="table-heading">{{fileInfo1.etfName}}: % Market Value</th>
-              <th class="table-heading">{{fileInfo2.etfName}}: % Market Value</th>
+              <th class="table-heading">{{service.getNameBigger()}}: % Market Value</th>
+              <th class="table-heading">{{service.getNameSmaller()}}</th>
               <th class="table-heading">Difference in % Market Value</th>
             </tr>
-            <ng-template #elseOther>
-              <th class="table-heading">Holdings</th>
-              <th class="table-heading">{{fileInfo2.etfName}}: % Market Value</th>
-              <th class="table-heading">{{fileInfo1.etfName}}: % Market Value</th>
-              <th class="table-heading">Difference in % Market Value</th>
-            </ng-template>
           </thead>
           <tbody>
             <ng-container *ngFor="let item of bigger">

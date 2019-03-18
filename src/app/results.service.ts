@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { Result, FileInfo } from './result'
+import { Result, FileInfo, ChartData } from './result'
 import { Router } from '@angular/router';
 
 
@@ -8,23 +8,18 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class ResultsService {
-  // storage for each files rows
-  private data1: Result[] = [];
-  private data2: Result[] = [];
-
-  // array containing data1 and data2. used to obtain differences between the two files holdings 
-  private data = [];
-
-  // differentiate between bigger and smaller file for future html rendering
-  private bigger: Result[] = [];
-  private smaller: Result[] = [];
+  // storage for bigger and smaller file 
+  private dataSmaller: Result[] = [];
+  private dataBigger: Result[] = [];
 
   // general information on each file
   private fileInfo: FileInfo[] = [];
 
+  // content stored differently for rendering chart //todo: figure out how to refactor.. shouldnt need both dataSmaller/dataBigger AND chartData... 
+  private chartData: ChartData = { chartNames: [], chartPercentBigger: [], chartPercentSmaller: [], chartPercentDif: [] };
 
   constructor(private router: Router) { }
-  
+
   // load and parse file information
   public uploadFiles(files: File[]): void {
     // keep track of file1 vs file2
@@ -45,7 +40,11 @@ export class ResultsService {
       // extract lines for file1 and file2
       let linesF1 = fileContents[0].split('\n');
       let linesF2 = fileContents[1].split('\n');
-      
+
+      // save bigger/smaller status
+      obj1.bigger = linesF1.length > linesF2.length ? true : false;
+      obj2.bigger = linesF2.length > linesF1.length ? true : false;
+
       // save file names
       obj1.etfName = linesF1[0];
       obj2.etfName = linesF2[0];
@@ -54,7 +53,7 @@ export class ResultsService {
       obj1.date = linesF1[3];
       obj2.date = linesF2[3];
 
-      // save file content (as text)
+      // save file content (as text) // remove .file property?
       obj1.file = fileContents[0];
       obj2.file = fileContents[1];
 
@@ -63,95 +62,115 @@ export class ResultsService {
       this.fileInfo.push(Object.assign({}, obj2));
 
       // extract row columns from each line. takes in a location to store each files row and columns
-      this.parseLines(linesF1, this.data1); 
-      this.parseLines(linesF2, this.data2);
+      this.parseLines(linesF1, obj1.bigger ? this.dataBigger : this.dataSmaller);
+      this.parseLines(linesF2, obj2.bigger ? this.dataBigger : this.dataSmaller);
     }).then(() => {
-      // get differences 
-      this.getDifferences(this.data);
+      // get % market value differences for intersecting holdings 
+      this.getDifferences();
+
+      // render results page
       this.router.navigate(['/results']);
     });
   }
 
   // assumes particular csv parsing. iterate through lines of the file and store columns in respective fileData location
-  private parseLines(lines, fileData): void {
-    var obj = { name: '', percent: null, intersection: false, smallerElem: -1, difPercent: 0.00 };
+  private parseLines(lines: any, fileData: Result[]): void {
+    var obj = { name: '', percent: 0, intersection: false, smallerElem: -1, difPercent: 0.00 };
 
     for (var i = 6; i < lines.length; i++) {
       if (lines[i] !== "") {
         var currentline = lines[i].split(",");
 
         obj.name = currentline[0];
-        obj.percent = parseFloat(currentline[1].slice(4)).toFixed(6);
+        obj.percent = parseFloat(currentline[1].slice(4));
 
+        // check for duplicate holdings
+        let exists = fileData.findIndex(item => item.name === currentline[0]);
+        if (exists != -1) {
+          obj.percent = fileData[exists].percent + obj.percent;
+          fileData.splice(exists, 1);
+        }
         fileData.push(Object.assign({}, obj));
       }
     }
-
-    this.data.push(fileData);
-
   }
 
   // get % market value differences for intersecting holdings
-  private getDifferences(files) {
-    // identify smaller file for more efficient looping and for use when rendering final chart
-    if (files[0].length <= files[1].length){
-      this.smaller = files[0];
-      this.fileInfo[0].bigger = false;
-      this.bigger = files[1];
-      this.fileInfo[1].bigger = true;
-    }
-    else {
-      this.smaller = files[1];
-      this.fileInfo[1].bigger = false;
-      this.bigger = files[0];
-      this.fileInfo[0].bigger = true;
-    }
-
+  private getDifferences() {
     // identify intersecting holdings and update Result properties
-    for (var i = 0; i < this.bigger.length; i++) {
-      var elem = this.smaller.findIndex(item => item.name === this.bigger[i].name);
+    for (var i = 0; i < this.dataBigger.length; i++) {
+      var elem = this.dataSmaller.findIndex(item => item.name === this.dataBigger[i].name);
 
       if (elem != -1) {
-        var dif = Math.abs(this.smaller[elem].percent - this.bigger[i].percent).toPrecision(6);
+        var dif = Math.abs(this.dataSmaller[elem].percent - this.dataBigger[i].percent).toPrecision(6);
 
-        this.bigger[i].intersection = true;
-        this.smaller[elem].intersection = true;
+        this.dataBigger[i].intersection = true;
+        this.dataSmaller[elem].intersection = true;
 
-        this.bigger[i].smallerElem = elem;
-        this.smaller[elem].smallerElem = elem;
-        this.bigger[i].difPercent = parseFloat(Number(dif).toFixed(6));
-        this.smaller[elem].difPercent = parseFloat(Number(dif).toFixed(6));
+        this.dataBigger[i].smallerElem = elem;
+        this.dataSmaller[elem].smallerElem = elem;
+        this.dataBigger[i].difPercent = parseFloat(Number(dif).toFixed(6));
+        this.dataSmaller[elem].difPercent = parseFloat(Number(dif).toFixed(6));
       }
       else {
-        this.bigger[i].difPercent = this.bigger[i].percent;
+        this.dataBigger[i].difPercent = this.dataBigger[i].percent;
       }
     }
   }
 
-  // return array with each files information
-  public getReuslts():FileInfo[]{
-    return this.fileInfo;
+  // store data for rendering chart in chartData in separate arrays
+  public getIntersectingData(): any {
+    for (var i = 0; i < this.dataBigger.length; i++) {
+      if (this.dataBigger[i].smallerElem != -1) {
+        this.chartData.chartPercentSmaller.push(this.dataSmaller[this.dataBigger[i].smallerElem].percent);
+        this.chartData.chartPercentDif.push(this.dataBigger[i].difPercent);
+      }
+      else {
+        this.chartData.chartPercentSmaller.push(0);
+        this.chartData.chartPercentDif.push(this.dataBigger[i].percent);
+      }
+
+      this.chartData.chartNames.push(this.dataBigger[i].name);
+      this.chartData.chartPercentBigger.push(this.dataBigger[i].percent);
+    }
+
+    for (var i = 0; i < this.dataSmaller.length; i++) {
+      if (this.dataSmaller[i].smallerElem == -1) {
+        this.chartData.chartNames.push(this.dataSmaller[i].name);
+        this.chartData.chartPercentBigger.push(0);
+        this.chartData.chartPercentSmaller.push(this.dataSmaller[i].percent);
+        this.chartData.chartPercentDif.push(this.dataSmaller[i].percent);
+      }
+    }
+
+    return this.chartData;
   }
 
-
-  public getFirstFileName(): string {
-    return this.fileInfo[0].etfName;
-  }
-  public getSecondFileName():string {
-    return this.fileInfo[1].etfName;
+  public getNameBigger(): string {
+    return this.fileInfo[0].bigger ? this.fileInfo[0].etfName : this.fileInfo[1].etfName;
   }
 
+  public getNameSmaller(): string {
+    return this.fileInfo[0].bigger ? this.fileInfo[1].etfName : this.fileInfo[0].etfName;
+  }
+
+  public getFileDate(): string {
+    return this.fileInfo[1].date;
+  }
+
+  // return smaller files data
   public getSmall(): any {
     const smallObs = new Observable(observer => {
-      observer.next(this.smaller);
+      observer.next(this.dataSmaller);
     });
 
     return smallObs;
   }
 
+  // return larger files data
   public getBig(): any {
     const bigObs = new Observable(observer => {
-      observer.next(this.bigger);
+      observer.next(this.dataBigger);
     });
 
     return bigObs;
