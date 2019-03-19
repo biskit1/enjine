@@ -15,7 +15,7 @@ export class ResultComponent implements OnInit {
   smaller: Result[] = [];
   bigger: Result[] = [];
 
-  constructor(private service: ResultsService, private router: Router) {
+  constructor(public service: ResultsService, private router: Router) {
   }
 
   ngOnInit() {

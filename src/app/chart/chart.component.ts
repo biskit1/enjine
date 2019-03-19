@@ -18,7 +18,7 @@ export class ChartComponent implements OnInit {
   chart = {
     type: 'bar'
   };
-  highcharts = Highcharts;
+  Highcharts: typeof Highcharts = Highcharts;
   chartOptions: {};
   scrollbar: any;
 
