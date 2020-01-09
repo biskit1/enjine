@@ -2,7 +2,7 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.5.
 
-Follow the format of the csv's included in this project to generate accurate results. 
+Use the sample csv's included in this project, or follow their format to generate accurate results. 
 
 ## Development server
 
